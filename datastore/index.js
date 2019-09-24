@@ -8,16 +8,36 @@ var items = {};
 // Public API - Fix these CRUD functions ///////////////////////////////////////
 
 exports.create = (text, callback) => {
-  var id = counter.getNextUniqueId();
-  items[id] = text;
-  callback(null, { id, text });
+  counter.getNextUniqueId((err, data) => {
+    var id = data;
+    console.log('create id: ', id);
+    items[id] = text;
+    var filePath = path.join(__dirname, 'data', id + '.txt');
+    fs.writeFile(filePath, text, (err) => {
+      if (err) {
+        throw ('error writing id file');
+      } else {
+        console.log('writing id file success!');
+        //callback(null, text);
+      }
+    });
+    callback(null, { id, text }); //addTodo renders
+  });
 };
 
 exports.readAll = (callback) => {
-  var data = _.map(items, (text, id) => {
-    return { id, text };
+
+  fs.readdir(path.join(__dirname, 'data'), (err, files) => {
+    if (err) {
+      throw ('error reading directory');
+    } else {
+      var data = _.map(files, (text, id) => {
+        var ID = text.slice(0, text.length - 4)
+        return { id: ID, text: ID };
+      });
+      callback(null, data);
+    }
   });
-  callback(null, data);
 };
 
 exports.readOne = (id, callback) => {
