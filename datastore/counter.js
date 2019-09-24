@@ -20,7 +20,7 @@ const readCounter = (callback) => {
     if (err) {
       callback(null, 0); //
     } else {
-      callback(null, Number(fileData)); // >1
+      callback(null, Number(fileData));
     }
   });
 };
